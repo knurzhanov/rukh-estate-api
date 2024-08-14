@@ -1,0 +1,24 @@
+{
+  "name": "rukh-estate",
+  "version": "1.0.0",
+  "description": "Real estate app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm start\" \"npm run client\"",
+    "live": "nodemon index.js"
+  },
+  "author": "NRG",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.1",
+    "nodemon": "^3.1.4"
+  }
+}

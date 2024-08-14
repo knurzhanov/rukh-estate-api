@@ -1,0 +1,109 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+const authRoutes = require('./routes/authRoutes');
+const authMiddleware = require('./middleware/authMiddleware');
+
+
+const app = express();
+
+
+const port = 5000;
+
+// Подключение к MongoDB
+mongoose.connect('mongodb://localhost:27017/real_estate', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Модель недвижимости
+const PropertySchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  roomCount: { type: String, required: true },
+  area: { type: String, required: true },
+  floor: { type: String, required: true },
+  totalFloors: { type: String, required: true },
+  address: { type: String, required: true },
+  price: { type: String, required: true },
+  square: { type: String, required: true },
+  description: { type: String, required: false }, // Описание может быть пустым
+  images: [{ type: String, required: false }], // Массив строк для изображений
+});
+
+const Property = mongoose.model('Property', PropertySchema);
+
+// Middleware
+app.use(express.json());
+app.use(cors());
+app.use('/api/auth', authRoutes);
+
+app.get('/api/protected', authMiddleware, (req, res) => {
+  res.json({ message: 'This is a protected route' });
+});
+
+// Обработчик для добавления новых объектов
+app.post('/add-product', async (req, res) => {
+  try {
+    const property = new Property(req.body);
+    await property.save();
+    res.status(201).json(property);
+  } catch (error) {
+    res.status(400).json({ message: 'Error adding property', error });
+  }
+});
+
+app.get('/properties', async (req, res) => {
+  let { roomCount } = req.query;
+
+  try {
+    // Логирование roomCount для диагностики
+    console.log('roomCount from query:', roomCount);
+
+    let query = {};
+
+    // Проверяем roomCount: если оно равно '100', показываем все квартиры
+    if (roomCount === '100') {
+      query = {}; // Показать все квартиры
+    } else if (roomCount) {
+      // Преобразуем roomCount в число для сравнения с числовым полем в базе данных
+      query = { roomCount: parseInt(roomCount, 10) };
+    }
+
+    // Логирование построенного запроса
+    console.log('Query:', query);
+
+    // Получение списка квартир по построенному запросу
+    const properties = await Property.find(query);
+
+    // Логирование найденных квартир
+    console.log('Properties found:', properties);
+
+    if (properties.length > 0) {
+      res.json(properties);
+    } else {
+      res.status(404).send('Нет доступных квартир');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Ошибка при получении данных');
+  }
+});
+
+
+
+
+// Обработчик для получения объекта по ID
+app.get('/properties/:id', async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+    if (!property)
+      return res.status(404).json({ message: 'Property not found' });
+    res.status(200).json(property);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching property', error });
+  }
+});
+app.use(express.json());
+app.use(cors());
+// Запуск сервера
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
