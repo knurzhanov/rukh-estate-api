@@ -9,10 +9,16 @@ const authMiddleware = require('./middleware/authMiddleware');
 const app = express();
 
 
-const port = 5000;
+const PORT = process.env.PORT || 5000;
 
-// Подключение к MongoDB
-mongoose.connect('mongodb://localhost:27017/real_estate', { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+mongoose.connect(process.env.MONGO_URI, {
+  // useNewUrlParser: true, // Удалите это
+  // useUnifiedTopology: true, // Удалите это
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.log(err));
 
 // Модель недвижимости
 const PropertySchema = new mongoose.Schema({
@@ -104,6 +110,5 @@ app.get('/properties/:id', async (req, res) => {
 app.use(express.json());
 app.use(cors());
 // Запуск сервера
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
