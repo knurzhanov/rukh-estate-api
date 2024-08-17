@@ -81,12 +81,16 @@ router.post('/add-product', async (req, res) => { // Добавлено authMidd
 // Удаление объекта недвижимости
 router.delete('/properties/:id', async (req, res) => {
   try {
+    console.log('Получен запрос на удаление с ID:', req.params.id); // Логирование ID
     const property = await Property.findByIdAndDelete(req.params.id);
     if (!property) {
+      console.log('Квартира не найдена для ID:', req.params.id); // Логирование, если квартира не найдена
       return res.status(404).json({ message: 'Property not found' });
     }
+    console.log('Квартира успешно удалена с ID:', req.params.id); // Логирование успешного удаления
     res.status(200).json({ message: 'Property deleted successfully' });
   } catch (error) {
+    console.error('Ошибка при удалении квартиры:', error);
     res.status(500).json({ message: 'Error deleting property', error });
   }
 });
