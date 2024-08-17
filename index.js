@@ -104,7 +104,7 @@ app.get('/properties/:id', async (req, res) => {
 });
 app.use(express.json());
 app.use(cors({
-  origin: 'https://rukh-estate.vercel.app/', // Укажите домен фронтенда
+  origin: 'https://rukh-estate.vercel.app', // Укажите домен фронтенда
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Разрешенные методы
   allowedHeaders: ['Content-Type', 'Authorization'], // Разрешенные заголовки
 }));
