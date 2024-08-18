@@ -25,6 +25,7 @@ const PropertySchema = new mongoose.Schema({
   address: { type: String, required: true },
   price: { type: String, required: true },
   square: { type: String, required: true },
+  homeTitle: { type: String, required: false },
   description: { type: String, required: false }, // Описание может быть пустым
   images: [{ type: String, required: false }], // Массив строк для изображений
 });
