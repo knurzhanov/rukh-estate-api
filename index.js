@@ -133,6 +133,42 @@ app.get('/properties/:id', async (req, res) => {
     res.status(500).json({ message: 'Error fetching property', error });
   }
 });
+
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const response = await axios.get('https://rukh-estate-api-5571379c698a.herokuapp.com/api/auth/users');
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users' });
+  }
+});
+
+// Пример маршрута для изменения пароля пользователя
+app.put('/api/users/:id/password', async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  try {
+    const response = await axios.put(`https://rukh-estate-api-5571379c698a.herokuapp.com/api/auth/users/${id}/password`, { password });
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating password' });
+  }
+});
+
+// Пример маршрута для удаления пользователя
+app.delete('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await axios.delete(`https://rukh-estate-api-5571379c698a.herokuapp.com/api/auth/users/${id}`);
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+});
+
 app.use(express.json());
 app.use(cors({
   origin: 'https://rukh-estate.vercel.app', // Укажите домен фронтенда
