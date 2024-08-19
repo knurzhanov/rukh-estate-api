@@ -136,9 +136,12 @@ app.get('/properties/:id', async (req, res) => {
 
 
 app.get('/api/users', async (req, res) => {
-  // Логика для получения списка пользователей
-  const users = await getUsersFromDatabase(); // Пример
-  res.json(users);
+  try {
+    const response = await axios.get('https://rukh-estate-api-5571379c698a.herokuapp.com/api/auth/users');
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users' });
+  }
 });
 
 // Пример маршрута для изменения пароля пользователя
