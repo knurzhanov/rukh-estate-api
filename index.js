@@ -79,11 +79,7 @@ app.get('/properties', async (req, res) => {
   try {
     let query = {};
 
-    if (roomCount === '100') {
-      query = {};
-    } else if (roomCount) {
-      query = { roomCount: parseInt(roomCount, 10) };
-    }
+    
 
     const properties = await Property.find(query);
 
