@@ -142,11 +142,9 @@ router.put('/users/:id/password', async (req, res) => {
     // Хешировать новый пароль
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    
-    // Логирование хэша нового пароля для проверки
     console.log(`New hashed password for user ${id}: ${hashedPassword}`);
 
-    // Установить новый хэшированный пароль
+    // Обновить пароль пользователя
     user.password = hashedPassword;
 
     // Сохранить обновленный пароль
@@ -155,10 +153,11 @@ router.put('/users/:id/password', async (req, res) => {
     console.log(`Password for user ${id} updated successfully`);
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    console.error('Ошибка при обновлении пароля:', error);
+    console.error('Error updating password:', error);
     res.status(500).json({ message: 'Error updating password', error });
   }
 });
+
 
 
 
