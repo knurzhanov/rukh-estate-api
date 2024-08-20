@@ -6,6 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const User = require('./models/User'); // Замените путь на актуальный путь к модели
 const authMiddleware = require('./middleware/authMiddleware');
 const bcrypt = require('bcrypt');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
