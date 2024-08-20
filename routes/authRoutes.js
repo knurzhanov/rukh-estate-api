@@ -41,30 +41,32 @@ router.post('/register', async (req, res) => {
 });
 
 // Авторизация пользователя
-router.post('/login', async (req, res) => { // Изменен путь на /login
+router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
+    console.log('Пользователь пытается авторизоваться:', username);
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(401).json({ message: 'Неверные учетные данные' });
+      console.log('Пользователь не найден:', username);
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Неверные учетные данные' });
+      console.log('Неверный пароль для пользователя:', username);
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Создание JWT токена
     const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
-    // Возвращаем токен и данные пользователя, включая роль
     res.json({ token, user: { username: user.username, role: user.role } });
   } catch (error) {
     console.error('Ошибка при авторизации:', error);
     res.status(500).json({ message: 'Ошибка при авторизации', error });
   }
 });
+
 
 // Добавление объекта недвижимости
 router.post('/add-product', async (req, res) => { // Добавлено authMiddleware для защиты маршрута

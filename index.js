@@ -172,6 +172,26 @@ app.delete('/api/users/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting user' });
   }
 });
+app.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token, user: { username: user.username, role: user.role } });
+  } catch (error) {
+    res.status(500).json({ message: 'Error logging in', error });
+  }
+});
 // Запуск сервера
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
