@@ -147,29 +147,6 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-// Пример маршрута для изменения пароля пользователя (прямое взаимодействие)
-app.put('/api/users/:id/password', async (req, res) => {
-  const { id } = req.params;
-  const { password } = req.body;
-
-  try {
-    const user = await User.findById(id); // Найти пользователя по ID
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Хеширование нового пароля
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    user.password = hashedPassword; // Обновление пароля пользователя
-    await user.save();
-
-    res.json({ message: 'Password updated successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating password' });
-  }
-});
 
 // Пример маршрута для удаления пользователя (прямое взаимодействие)
 app.delete('/api/users/:id', async (req, res) => {
