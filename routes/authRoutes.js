@@ -106,34 +106,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// Защищенные маршруты
 
-// Добавление объекта недвижимости
-router.post('/add-product', authMiddleware, async (req, res) => {
-  try {
-    const property = new Property(req.body); // Создаем новый объект недвижимости
-    await property.save(); // Сохраняем его в базе данных
-    res.status(201).json(property); // Возвращаем успешный ответ
-  } catch (error) {
-    res.status(400).json({ message: 'Ошибка при добавлении недвижимости', error }); // Обрабатываем ошибки
-  }
-});
 
-// Удаление объекта недвижимости
-router.delete('/properties/:id', authMiddleware, async (req, res) => {
-  try {
-    console.log('Получен запрос на удаление с ID:', req.params.id); // Логирование ID
-    const property = await Property.findByIdAndDelete(req.params.id);
-    if (!property) {
-      console.log('Квартира не найдена для ID:', req.params.id); // Логирование, если квартира не найдена
-      return res.status(404).json({ message: 'Недвижимость не найдена' });
-    }
-    console.log('Квартира успешно удалена с ID:', req.params.id); // Логирование успешного удаления
-    res.status(200).json({ message: 'Недвижимость успешно удалена' });
-  } catch (error) {
-    console.error('Ошибка при удалении квартиры:', error);
-    res.status(500).json({ message: 'Ошибка при удалении недвижимости', error });
-  }
-});
 
 module.exports = router;
