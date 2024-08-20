@@ -14,53 +14,48 @@ router.post('/register', async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
-    if (!username || !email || !password || !role) {
-      return res.status(400).json({ message: 'Все поля обязательны' });
-    }
-
-    if (!['Admin', 'Visitor'].includes(role)) {
-      return res.status(400).json({ message: 'Неверная роль пользователя' });
-    }
-
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      return res.status(400).json({ message: 'Пользователь с таким логином или email уже существует' });
+      return res.status(400).json({ message: 'User with this username or email already exists' });
     }
 
-    // Хеширование пароля
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Создание нового пользователя с хешированным паролем
-    const user = new User({ username, email, password: hashedPassword, role });
+    const user = new User({ username, email, password, role });
     await user.save();
-    res.status(201).json({ message: 'Пользователь успешно зарегистрирован', user });
+
+    console.log('Registered user:', user); // Логирование зарегистрированного пользователя
+
+    res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
-    console.error('Ошибка при регистрации пользователя:', error);
-    res.status(500).json({ message: 'Ошибка при регистрации пользователя', error });
+    res.status(400).json({ message: 'Error registering user', error });
   }
 });
+
 
 // Авторизация пользователя
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Логирование для проверки входящих данных
     console.log(`Attempting to log in with username: ${username}`);
 
+    // Поиск пользователя в базе данных по имени пользователя
     const user = await User.findOne({ username });
     if (!user) {
       console.log('User not found:', username);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    // Сравнение введенного пароля с хэшированным паролем в базе данных
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log(`Comparing passwords: Entered (${password}), Hashed (${user.password})`);
+
     if (!isMatch) {
       console.log('Password does not match for user:', username);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET || '12345', { expiresIn: '1h' });
+    // Создание JWT токена
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
     console.log(`User ${username} logged in successfully.`);
     res.json({ token, user: { username: user.username, role: user.role } });
