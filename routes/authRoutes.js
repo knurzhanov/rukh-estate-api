@@ -141,8 +141,13 @@ router.put('/users/:id/password', async (req, res) => {
 
     // Хешировать новый пароль
     const saltRounds = 10;
-    user.password = await bcrypt.hash(password, saltRounds);
-    console.log(`New hashed password for user ${id}: ${user.password}`);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    
+    // Логирование хэша нового пароля для проверки
+    console.log(`New hashed password for user ${id}: ${hashedPassword}`);
+
+    // Установить новый хэшированный пароль
+    user.password = hashedPassword;
 
     // Сохранить обновленный пароль
     await user.save();
