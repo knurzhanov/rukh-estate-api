@@ -105,8 +105,53 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ message: 'Ошибка при получении списка пользователей', error });
   }
 });
+router.delete('/users/:id', async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Ошибка при удалении пользователя:', error);
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+});
 
+// Обновление пользователя (например, обновление пароля)
+router.put('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { username, email, password, role } = req.body;
+
+  try {
+    // Найти пользователя по ID
+    let user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Обновить поля пользователя, если они переданы в запросе
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (role) user.role = role;
+
+    // Если передан новый пароль, то хешировать его и обновить
+    if (password) {
+      const saltRounds = 10;
+      user.password = await bcrypt.hash(password, saltRounds);
+    }
+
+    // Сохранить обновленного пользователя в базе данных
+    await user.save();
+
+    res.json({ message: 'User updated successfully', user });
+  } catch (error) {
+    console.error('Ошибка при обновлении пользователя:', error);
+    res.status(500).json({ message: 'Error updating user' });
+  }
+});
 
 
 module.exports = router;
