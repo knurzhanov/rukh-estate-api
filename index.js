@@ -31,7 +31,7 @@ const Property = mongoose.model('Property', PropertySchema);
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: 'https://rukh-estate.vercel.app', // Укажите домен фронтенда
+  origin: ['https://rukh-estate.vercel.app', 'http://localhost:3000'], // Укажите домен фронтенда
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
