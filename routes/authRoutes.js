@@ -139,14 +139,6 @@ router.put('/users/:id/password', async (req, res) => {
       return res.status(400).json({ message: 'Password not provided' });
     }
 
-    // Хешировать новый пароль
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log(`New hashed password for user ${id}: ${hashedPassword}`);
-
-    // Обновить пароль пользователя
-    user.password = hashedPassword;
-
     // Сохранить обновленный пароль
     await user.save();
 
