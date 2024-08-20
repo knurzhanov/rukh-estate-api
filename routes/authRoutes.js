@@ -129,20 +129,29 @@ router.put('/users/:id/password', async (req, res) => {
     // Найти пользователя по ID
     const user = await User.findById(id);
     if (!user) {
+      console.log(`User with ID ${id} not found`);
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Проверка получения пароля из тела запроса
+    if (!password) {
+      console.log('Password not provided');
+      return res.status(400).json({ message: 'Password not provided' });
     }
 
     // Хешировать новый пароль
     const saltRounds = 10;
     user.password = await bcrypt.hash(password, saltRounds);
+    console.log(`New hashed password for user ${id}: ${user.password}`);
 
     // Сохранить обновленный пароль
     await user.save();
 
+    console.log(`Password for user ${id} updated successfully`);
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
     console.error('Ошибка при обновлении пароля:', error);
-    res.status(500).json({ message: 'Error updating password' });
+    res.status(500).json({ message: 'Error updating password', error });
   }
 });
 
