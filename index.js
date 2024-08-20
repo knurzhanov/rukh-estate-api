@@ -145,13 +145,18 @@ app.put('/api/users/:id/password', async (req, res) => {
   const { password } = req.body;
 
   try {
-    const user = await User.findById(id); // Замените на корректную модель пользователя
+    const user = await User.findById(id); // Найти пользователя по ID
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    user.password = password; // Обновление пароля пользователя
+    // Хеширование нового пароля
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    user.password = hashedPassword; // Обновление пароля пользователя
     await user.save();
+
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error updating password' });
