@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const axios = require('axios');
 const authRoutes = require('./routes/authRoutes');
+const User = require('./models/User'); // Замените путь на актуальный путь к модели
 const authMiddleware = require('./middleware/authMiddleware');
 
 const app = express();
