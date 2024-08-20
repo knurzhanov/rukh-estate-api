@@ -42,28 +42,31 @@ router.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-
   try {
-    console.log('Пользователь пытается авторизоваться:', username);
+    const { username, password } = req.body;
+
+    // Логирование для проверки входящих данных
+    console.log(`Attempting to log in with username: ${username}`);
+
     const user = await User.findOne({ username });
     if (!user) {
-      console.log('Пользователь не найден:', username);
+      console.log('User not found:', username);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      console.log('Неверный пароль для пользователя:', username);
+      console.log('Password does not match for user:', username);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET || '12345', { expiresIn: '1h' });
 
+    console.log(`User ${username} logged in successfully.`);
     res.json({ token, user: { username: user.username, role: user.role } });
   } catch (error) {
-    console.error('Ошибка при авторизации:', error);
-    res.status(500).json({ message: 'Ошибка при авторизации', error });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Error logging in', error });
   }
 });
 
