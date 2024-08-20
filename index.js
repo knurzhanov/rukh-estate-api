@@ -5,7 +5,7 @@ const axios = require('axios');
 const authRoutes = require('./routes/authRoutes');
 const User = require('./models/User'); // Замените путь на актуальный путь к модели
 const authMiddleware = require('./middleware/authMiddleware');
-
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -69,21 +69,24 @@ app.delete('/properties/:id', async (req, res) => {
 });
 
 // Обработчик для обновления объекта по ID
-app.put('/properties/:id', async (req, res) => {
+
+app.put('/api/users/:id/password', async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
   try {
-    const property = await Property.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    
-    if (!property) {
-      return res.status(404).json({ message: 'Property not found' });
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-    
-    res.status(200).json(property);
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating property', error });
+    res.status(500).json({ message: 'Error updating password' });
   }
 });
 
