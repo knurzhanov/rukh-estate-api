@@ -1,6 +1,5 @@
 const express = require('express');
 const User = require('../models/User');
- // Добавлен импорт модели Property
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); // Добавлен импорт bcrypt для хеширования паролей
 const authMiddleware = require('../middleware/authMiddleware');
@@ -121,37 +120,32 @@ router.delete('/users/:id', async (req, res) => {
 });
 
 // Обновление пользователя (например, обновление пароля)
-router.put('/users/:id', async (req, res) => {
+// Маршрут для изменения пароля пользователя
+router.put('/users/:id/password', async (req, res) => {
   const { id } = req.params;
-  const { username, email, password, role } = req.body;
+  const { password } = req.body;
 
   try {
     // Найти пользователя по ID
-    let user = await User.findById(id);
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Обновить поля пользователя, если они переданы в запросе
-    if (username) user.username = username;
-    if (email) user.email = email;
-    if (role) user.role = role;
+    // Хешировать новый пароль
+    const saltRounds = 10;
+    user.password = await bcrypt.hash(password, saltRounds);
 
-    // Если передан новый пароль, то хешировать его и обновить
-    if (password) {
-      const saltRounds = 10;
-      user.password = await bcrypt.hash(password, saltRounds);
-    }
-
-    // Сохранить обновленного пользователя в базе данных
+    // Сохранить обновленный пароль
     await user.save();
 
-    res.json({ message: 'User updated successfully', user });
+    res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    console.error('Ошибка при обновлении пользователя:', error);
-    res.status(500).json({ message: 'Error updating user' });
+    console.error('Ошибка при обновлении пароля:', error);
+    res.status(500).json({ message: 'Error updating password' });
   }
 });
+
 
 
 module.exports = router;
