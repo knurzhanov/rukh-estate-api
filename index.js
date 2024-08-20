@@ -79,12 +79,12 @@ app.get('/properties', async (req, res) => {
   try {
     let query = {};
 
-    // Проверяем, если roomCount задан и он не равен '100', используем его для фильтрации
-    if (roomCount && roomCount !== '100') {
+    if (roomCount === '100') {
+      query = {};
+    } else if (roomCount) {
       query = { roomCount: parseInt(roomCount, 10) };
     }
 
-    // Получаем данные из базы данных
     const properties = await Property.find(query);
 
     if (properties.length > 0) {
@@ -93,7 +93,6 @@ app.get('/properties', async (req, res) => {
       res.status(404).send('Нет доступных квартир');
     }
   } catch (error) {
-    console.error('Ошибка при получении данных:', error); // Логируем ошибку для отладки
     res.status(500).send('Ошибка при получении данных');
   }
 });
