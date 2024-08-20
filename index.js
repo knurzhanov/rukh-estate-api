@@ -81,12 +81,20 @@ app.put('/api/users/:id/password', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    console.log(`Changing password for user ${id}`);
+    
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    console.log(`New hashed password: ${hashedPassword}`);
+    
+    user.password = hashedPassword;
     await user.save();
 
+    console.log(`Password updated successfully for user ${id}`);
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
+    console.error('Error updating password:', error);
     res.status(500).json({ message: 'Error updating password' });
   }
 });
