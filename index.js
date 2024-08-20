@@ -90,7 +90,6 @@ app.get('/properties', async (req, res) => {
     if (properties.length > 0) {
       res.json(properties);
     } else {
-      res.status(200).send('Нет квартир с таким количеством комнат');
       res.status(404).send('Нет доступных квартир');
     }
   } catch (error) {
