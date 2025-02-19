@@ -10,8 +10,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Подключение к MongoDB
-mongoose.connect(process.env.MONGO_URI, {});
+//mongoose.connect(process.env.MONGO_URI, {});
+const mongoURI = "mongodb+srv://knurzhanov1999:<db_password>@rukh-estate.ml4c5.mongodb.net/?retryWrites=true&w=majority&appName=rukh-estate";
 
+// Подключение к базе данных
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Подключение к MongoDB успешно!");
+  })
+  .catch((err) => {
+    console.error("Ошибка подключения к MongoDB:", err);
+  });
 // Модель недвижимости
 const PropertySchema = new mongoose.Schema({
   title: { type: String, required: true },
