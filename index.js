@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 
 // Подключение к MongoDB
 //mongoose.connect(process.env.MONGO_URI, {});
-const mongoURI = "mongodb+srv://knurzhanov1999:<db_password>@rukh-estate.ml4c5.mongodb.net/?retryWrites=true&w=majority&appName=rukh-estate";
+const mongoURI = "mongodb+srv://knurzhanov1999:123Qwe123!@rukh-estate.ml4c5.mongodb.net/?retryWrites=true&w=majority&appName=rukh-estate";
 
 // Подключение к базе данных
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
